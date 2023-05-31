@@ -6,7 +6,7 @@
 </head>
 <body>
   <script type="text/javascript">
-    // Definir la capa Rescaling como una capa personalizada en TensorFlow.js
+    // Define la capa Rescaling como una capa personalizada en TensorFlow.js
     class Rescaling extends tf.layers.Layer {
       constructor(config) {
         super(config);
@@ -30,19 +30,19 @@
       }
     }
 
-    // Registrar la capa personalizada
+    // Registra la capa personalizada
     tf.serialization.registerClass(Rescaling);
 
     async function runModel() {
       const model = await tf.loadLayersModel('model.json', {
-        customObjects: { 'Rescaling': Rescaling } // Proporcionar la capa personalizada al cargar el modelo
+        customObjects: { 'Rescaling': Rescaling } // Proporciona la capa personalizada al cargar el modelo
       });
       console.log('Modelo cargado con éxito.');
 
       // Ejemplo de imagen de entrada
       const inputImage = tf.zeros([1, 256, 256, 3]);
 
-      // Realizar la predicción con el modelo cargado
+      // Realiza la predicción con el modelo cargado
       const prediction = model.predict(inputImage);
       prediction.print();  // Muestra la salida del modelo
 
