@@ -166,4 +166,51 @@
         updateResultFields([]);
       }
     }
- 
+
+    document.getElementById("upload-pc-button").addEventListener("click", function() {
+      var imageFileInput = document.createElement("input");
+      imageFileInput.type = "file";
+      imageFileInput.accept = "image/*";
+      imageFileInput.onchange = handleImageUpload;
+      imageFileInput.click();
+    });
+
+    // Event listener para cargar imagen desde URL
+    var imageUrlInput = document.getElementById("image-url");
+    imageUrlInput.addEventListener("change", function(event) {
+      var imagePreview = document.getElementById("image-preview");
+      var imageUrl = event.target.value;
+
+      if (imageUrl) {
+        imagePreview.src = imageUrl;
+
+        const imageElement = new Image();
+        imageElement.onload = async () => {
+          const results = await predictImage(imageElement);
+          updateResultFields(results);
+        };
+        imageElement.src = imageUrl;
+      } else {
+        imagePreview.src = "";
+        updateResultFields([]);
+      }
+    });
+
+    // Event listener para botón "Predecir"
+    document.getElementById("predict-button").addEventListener("click", async function() {
+      var imagePreview = document.getElementById("image-preview");
+
+      if (imagePreview.src && imagePreview.src !== "#") {
+        const imageElement = new Image();
+        imageElement.onload = async () => {
+          const results = await predictImage(imageElement);
+          updateResultFields(results);
+        };
+        imageElement.src = imagePreview.src;
+      } else {
+        updateResultFields([]);
+      }
+    });
+  </script>
+</body>
+</html>
