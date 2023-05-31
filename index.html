@@ -23,14 +23,15 @@
       }
 
       getConfig() {
-        const baseConfig = super.getConfig();
-        return Object.assign({}, baseConfig, {
-          scale: this.scale,
-          offset: this.offset
-        });
+        const config = super.getConfig();
+        config.scale = this.scale;
+        config.offset = this.offset;
+        return config;
       }
     }
-    tf.serialization.registerClass(Rescaling); // Registrar la capa personalizada
+
+    // Registrar la capa personalizada
+    tf.serialization.registerClass(Rescaling);
 
     async function runModel() {
       const model = await tf.loadLayersModel('model.json', {
