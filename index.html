@@ -1,218 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
+ <!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clasificación de Características del Cuero Curtido</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="styles.css">
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <title>Modelo Keras convertido a TensorFlow.js</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.8.0"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Características del Cuero Curtido</h1>
-    
-    <div id="image-preview-container">
-      <h2>Imagen para predecir</h2>
-      <img id="image-preview" src="#" alt="Imagen para predecir">
-    </div>
-
-    <div id="result-form">
-      <div class="form-group">
-        <label for="class1">Clase 1:</label>
-        <span id="pliegues"></span>
-      </div>
-
-      <div class="form-group">
-        <label for="class2">Clase 2:</label>
-        <span id="class2"></span>
-      </div>
-
-      <div class="form-group">
-        <label for="class3">Clase 3:</label>
-        <span id="class3"></span>
-      </div>
-        
-      <div class="form-group">
-        <label for="class4">Clase 4:</label>
-        <span id="class4"></span>
-      </div>
-        
-      <div class="form-group">
-        <label for="class5">Clase 5:</label>
-        <span id="class5"></span>
-      </div>
-        
-      <div class="form-group">
-        <label for="class6">Clase 6:</label>
-        <span id="class6"></span>
-      </div>
-
-      <div class="form-group">
-        <button id="predict-button">Predecir</button>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="image-url">URL de la imagen:</label>
-      <input type="text" id="image-url">
-      <button id="upload-button-url">Cargar desde URL</button>
-    </div>
-    
-    <div class="form-group">
-      <button id="upload-pc-button">Subir imagen desde PC</button>
-    </div>
+  <div>
+    <button onclick="runModel()">Cargar y ejecutar el modelo</button>
   </div>
+  <div id="output"></div>
 
-  <div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="calculations-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      Cálculos
-    </button>
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="calculations-dropdown">
-      <div class="form-group">
-        <label for="textfield1">Cantidad por metros:</label>
-        <input type="text" id="textfield1">
-      </div>
-      <div class="form-group">
-        <label for="textfield2">Precio por metro:</label>
-        <input type="text" id="textfield2">
-      </div>
-      <div class="form-group">
-        <label for="textfield3">Valor final:</label>
-        <input type="text" id="textfield3">
-      </div>
-      <div class="form-group">
-        <button id="calculate-button">Calcular</button>
-      </div>
-    </div>
-  </div>
+  <script type="text/javascript">
+    async function runModel() {
+      const model = await tf.loadLayersModel('model.json');
+      console.log('Modelo cargado con éxito.');
 
-  <div id="gross-profit-margin-chart"></div>
+      // Ejemplo de imagen de entrada
+      const inputImage = tf.zeros([1, 256, 256, 3]);
 
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  <script src="script.js"></script> <!-- Llamada al archivo script.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0"></script>
-  <script>
-    async function predictImage(imageElement) {
-  const model = await tf.loadLayersModel('model.json');
-  const metadata = {
-    tfjsVersion: "1.3.1",
-    tmVersion: "2.4.5",
-    packageVersion: "0.8.4-alpha2",
-    packageName: "@teachablemachine/image",
-    timeStamp: "2023-05-31T04:07:27.234Z",
-    userMetadata: {},
-    modelName: "tm-my-image-model",
-    labels: ["Folding marks", "Grain off", "Growth marks", "loose grains", "non defective", "pinhole"],
-    imageSize: 224
-  };
+      // Realizar la predicción con el modelo cargado
+      const prediction = model.predict(inputImage);
+      prediction.print();  // Muestra la salida del modelo
 
-  const image = tf.browser.fromPixels(imageElement).toFloat().expandDims();
-  const normalizedImage = image.div(255.0);
+      // Si deseas utilizar el modelo para hacer predicciones en el navegador,
+      // puedes llamar al método 'predict' con los datos de entrada adecuados.
 
-  const resizedImage = tf.image.resizeBilinear(normalizedImage, [metadata.imageSize, metadata.imageSize]);
+      // Asegúrate de ajustar los datos de entrada según tus necesidades.
 
-  const predictions = await model.predict(resizedImage).data();
-
-  const classes = metadata.labels;
-  const results = Array.from(predictions).map((prediction, index) => ({
-    className: classes[index],
-    probability: prediction.toFixed(4)
-  }));
-
-  return results;
-}
-
-
-    function updateResultFields(results) {
-      document.getElementById('pliegues').textContent = results[0].probability;
-      document.getElementById('class2').textContent = results[1].probability;
-      document.getElementById('class3').textContent = results[2].probability;
-      document.getElementById('class4').textContent = results[3].probability;
-      document.getElementById('class5').textContent = results[4].probability;
-      document.getElementById('class6').textContent = results[5].probability;
+      // Mostrar la salida del modelo en el HTML
+      const outputElement = document.getElementById('output');
+      outputElement.innerHTML = prediction.dataSync();
     }
 
-    function showImagePreview(event) {
-      var preview = document.getElementById("image-preview");
-      var file = event.target.files[0];
-      var reader = new FileReader();
+    // Ejecuta la función de carga del modelo cuando se haya cargado el DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      const button = document.querySelector('button');
+      button.disabled = true;
+      button.textContent = 'Cargando el modelo...';
 
-      reader.onloadend = function () {
-        preview.src = reader.result;
-      }
-
-      if (file) {
-        reader.readAsDataURL(file);
-      } else {
-        preview.src = "";
-      }
-    }
-
-    function handleImageUpload(event) {
-      const imageFile = event.target.files[0];
-      const imagePreview = document.getElementById("image-preview");
-
-      if (imageFile) {
-        showImagePreview(event);
-
-        const imageElement = new Image();
-        imageElement.onload = async () => {
-          const results = await predictImage(imageElement);
-          updateResultFields(results);
-        };
-        imageElement.src = URL.createObjectURL(imageFile);
-      } else {
-        imagePreview.src = "";
-        updateResultFields([]);
-      }
-    }
-
-    document.getElementById("upload-pc-button").addEventListener("click", function() {
-      var imageFileInput = document.createElement("input");
-      imageFileInput.type = "file";
-      imageFileInput.accept = "image/*";
-      imageFileInput.onchange = handleImageUpload;
-      imageFileInput.click();
-    });
-
-    // Event listener para cargar imagen desde URL
-    var imageUrlInput = document.getElementById("image-url");
-    imageUrlInput.addEventListener("change", function(event) {
-      var imagePreview = document.getElementById("image-preview");
-      var imageUrl = event.target.value;
-
-      if (imageUrl) {
-        imagePreview.src = imageUrl;
-
-        const imageElement = new Image();
-        imageElement.onload = async () => {
-          const results = await predictImage(imageElement);
-          updateResultFields(results);
-        };
-        imageElement.src = imageUrl;
-      } else {
-        imagePreview.src = "";
-        updateResultFields([]);
-      }
-    });
-
-    // Event listener para botón "Predecir"
-    document.getElementById("predict-button").addEventListener("click", async function() {
-      var imagePreview = document.getElementById("image-preview");
-
-      if (imagePreview.src && imagePreview.src !== "#") {
-        const imageElement = new Image();
-        imageElement.onload = async () => {
-          const results = await predictImage(imageElement);
-          updateResultFields(results);
-        };
-        imageElement.src = imagePreview.src;
-      } else {
-        updateResultFields([]);
-      }
+      runModel().then(() => {
+        button.disabled = false;
+        button.textContent = 'Cargar y ejecutar el modelo';
+      });
     });
   </script>
 </body>
