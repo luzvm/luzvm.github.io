@@ -82,6 +82,19 @@ function showImagePreview(event) {
     preview.src = "";
   }
 }
+function updateResultFields(results) {
+  const labels = ["Folding marks", "Grain off", "Growth marks", "loose grains", "non defective", "pinhole"];
+  for (let i = 0; i < results.length; i++) {
+    const probability = results[i].toFixed(4);
+    document.getElementById(`class${i + 1}`).textContent = probability;
+  }
+
+  const maxProbability = Math.max(...results);
+  const maxIndex = results.indexOf(maxProbability);
+  const predictedLabel = labels[maxIndex];
+
+  alert(`Predicción: ${predictedLabel}`);
+}
 
 // Asociar eventos a los elementos de la interfaz
 document.getElementById("upload-pc-button").addEventListener("click", function() {
