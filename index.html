@@ -2,17 +2,40 @@
 <html>
 <head>
   <title>Modelo Keras convertido a TensorFlow.js</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.8.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0"></script>
 </head>
 <body>
-  <div>
-    <button onclick="runModel()">Cargar y ejecutar el modelo</button>
-  </div>
-  <div id="output"></div>
-
   <script type="text/javascript">
+    // Definir la capa Rescaling como una capa personalizada en TensorFlow.js
+    class Rescaling extends tf.layers.Layer {
+      constructor(config) {
+        super(config);
+        this.scale = config.scale;
+        this.offset = config.offset;
+      }
+
+      call(inputs, kwargs) {
+        return tf.add(tf.mul(inputs[0], this.scale), this.offset);
+      }
+
+      computeOutputShape(inputShape) {
+        return inputShape;
+      }
+
+      getConfig() {
+        const baseConfig = super.getConfig();
+        return Object.assign({}, baseConfig, {
+          scale: this.scale,
+          offset: this.offset
+        });
+      }
+    }
+    tf.serialization.registerClass(Rescaling); // Registrar la capa personalizada
+
     async function runModel() {
-      const model = await tf.loadLayersModel('model.json');
+      const model = await tf.loadLayersModel('model.json', {
+        customObjects: { 'Rescaling': Rescaling } // Proporcionar la capa personalizada al cargar el modelo
+      });
       console.log('Modelo cargado con éxito.');
 
       // Ejemplo de imagen de entrada
@@ -26,23 +49,10 @@
       // puedes llamar al método 'predict' con los datos de entrada adecuados.
 
       // Asegúrate de ajustar los datos de entrada según tus necesidades.
-
-      // Mostrar la salida del modelo en el HTML
-      const outputElement = document.getElementById('output');
-      outputElement.innerHTML = prediction.dataSync();
     }
 
     // Ejecuta la función de carga del modelo cuando se haya cargado el DOM
-    document.addEventListener('DOMContentLoaded', () => {
-      const button = document.querySelector('button');
-      button.disabled = true;
-      button.textContent = 'Cargando el modelo...';
-
-      runModel().then(() => {
-        button.disabled = false;
-        button.textContent = 'Cargar y ejecutar el modelo';
-      });
-    });
+    document.addEventListener('DOMContentLoaded', runModel);
   </script>
 </body>
 </html>
