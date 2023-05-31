@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -61,7 +61,7 @@
     
     <div class="form-group">
       <label for="upload-pc">Subir imagen desde PC:</label>
-      <input type="file" id="upload-pc" accept="image/*">
+      <input type="file" id="upload-pc">
     </div>
   </div>
 
@@ -133,17 +133,15 @@
       document.getElementById('class6').textContent = results[5].probability;
     }
 
-    function showImagePreview(imageElement) {
-      const preview = document.getElementById("image-preview");
-      preview.src = URL.createObjectURL(imageElement);
-    }
+    document.getElementById("upload-pc").addEventListener("change", handleImageUpload);
+    document.getElementById("upload-button-url").addEventListener("click", loadImageFromURL);
 
     function handleImageUpload(event) {
       const imageFile = event.target.files[0];
       const imagePreview = document.getElementById("image-preview");
 
       if (imageFile) {
-        showImagePreview(imageFile);
+        showImagePreview(event);
 
         const imageElement = new Image();
         imageElement.onload = async () => {
@@ -157,17 +155,31 @@
       }
     }
 
-    document.getElementById("upload-pc").addEventListener("change", handleImageUpload);
+    function showImagePreview(event) {
+      var preview = document.getElementById("image-preview");
+      var file = event.target.files[0];
+      var reader = new FileReader();
 
-    // Event listener para cargar imagen desde URL
-    document.getElementById("upload-button-url").addEventListener("click", async function() {
-      var imagePreview = document.getElementById("image-preview");
+      reader.onloadend = function () {
+        preview.src = reader.result;
+      }
+
+      if (file) {
+        reader.readAsDataURL(file);
+      } else {
+        preview.src = "";
+      }
+    }
+
+    function loadImageFromURL() {
       var imageUrl = document.getElementById("image-url").value;
+      var imagePreview = document.getElementById("image-preview");
 
       if (imageUrl) {
-        imagePreview.src = imageUrl;
+        showImagePreviewURL(imageUrl);
 
         const imageElement = new Image();
+        imageElement.crossOrigin = "anonymous";
         imageElement.onload = async () => {
           const results = await predictImage(imageElement);
           updateResultFields(results);
@@ -177,7 +189,12 @@
         imagePreview.src = "";
         updateResultFields([]);
       }
-    });
+    }
+
+    function showImagePreviewURL(url) {
+      var preview = document.getElementById("image-preview");
+      preview.src = url;
+    }
   </script>
 </body>
 </html>
