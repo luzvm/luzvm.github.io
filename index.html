@@ -96,32 +96,35 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0"></script>
   <script>
     async function predictImage(imageElement) {
-      const model = await tf.loadLayersModel('model.json');
-      const metadata = {
-        tfjsVersion: "1.3.1",
-        tmVersion: "2.4.5",
-        packageVersion: "0.8.4-alpha2",
-        packageName: "@teachablemachine/image",
-        timeStamp: "2023-05-31T04:07:27.234Z",
-        userMetadata: {},
-        modelName: "tm-my-image-model",
-        labels: ["Folding marks", "Grain off", "Growth marks", "loose grains", "non defective", "pinhole"],
-        imageSize: 224
-      };
+  const model = await tf.loadLayersModel('model.json');
+  const metadata = {
+    tfjsVersion: "1.3.1",
+    tmVersion: "2.4.5",
+    packageVersion: "0.8.4-alpha2",
+    packageName: "@teachablemachine/image",
+    timeStamp: "2023-05-31T04:07:27.234Z",
+    userMetadata: {},
+    modelName: "tm-my-image-model",
+    labels: ["Folding marks", "Grain off", "Growth marks", "loose grains", "non defective", "pinhole"],
+    imageSize: 224
+  };
 
-      const image = tf.browser.fromPixels(imageElement).toFloat().expandDims();
-      const normalizedImage = image.div(255.0);
+  const image = tf.browser.fromPixels(imageElement).toFloat().expandDims();
+  const normalizedImage = image.div(255.0);
 
-      const predictions = await model.predict(normalizedImage).data();
+  const resizedImage = tf.image.resizeBilinear(normalizedImage, [metadata.imageSize, metadata.imageSize]);
 
-      const classes = metadata.labels;
-      const results = Array.from(predictions).map((prediction, index) => ({
-        className: classes[index],
-        probability: prediction.toFixed(4)
-      }));
+  const predictions = await model.predict(resizedImage).data();
 
-      return results;
-    }
+  const classes = metadata.labels;
+  const results = Array.from(predictions).map((prediction, index) => ({
+    className: classes[index],
+    probability: prediction.toFixed(4)
+  }));
+
+  return results;
+}
+
 
     function updateResultFields(results) {
       document.getElementById('pliegues').textContent = results[0].probability;
