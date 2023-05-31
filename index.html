@@ -20,32 +20,32 @@
     <div id="result-form">
       <div class="form-group">
         <label for="class1">Clase 1:</label>
-        <input type="text" id="pliegues" readonly>
+        <span id="pliegues"></span>
       </div>
 
       <div class="form-group">
         <label for="class2">Clase 2:</label>
-        <input type="text" id="class2" readonly>
+        <span id="class2"></span>
       </div>
 
       <div class="form-group">
         <label for="class3">Clase 3:</label>
-        <input type="text" id="class3" readonly>
+        <span id="class3"></span>
       </div>
         
       <div class="form-group">
         <label for="class4">Clase 4:</label>
-        <input type="text" id="class4" readonly>
+        <span id="class4"></span>
       </div>
         
       <div class="form-group">
         <label for="class5">Clase 5:</label>
-        <input type="text" id="class5" readonly>
+        <span id="class5"></span>
       </div>
         
       <div class="form-group">
         <label for="class6">Clase 6:</label>
-        <input type="text" id="class6" readonly>
+        <span id="class6"></span>
       </div>
 
       <div class="form-group">
@@ -124,12 +124,12 @@
     }
 
     function updateResultFields(results) {
-      document.getElementById('pliegues').value = results[0].probability;
-      document.getElementById('class2').value = results[1].probability;
-      document.getElementById('class3').value = results[2].probability;
-      document.getElementById('class4').value = results[3].probability;
-      document.getElementById('class5').value = results[4].probability;
-      document.getElementById('class6').value = results[5].probability;
+      document.getElementById('pliegues').textContent = results[0].probability;
+      document.getElementById('class2').textContent = results[1].probability;
+      document.getElementById('class3').textContent = results[2].probability;
+      document.getElementById('class4').textContent = results[3].probability;
+      document.getElementById('class5').textContent = results[4].probability;
+      document.getElementById('class6').textContent = results[5].probability;
     }
 
     function showImagePreview(event) {
